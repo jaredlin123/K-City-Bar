@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>高雄酒吧樂透（50家 距離限制＋電話）</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+  body { margin: 0; padding: 0; background: radial-gradient(ellipse at center, #0f0c29, #302b63, #24243e); color: #eee; font-family: 'Orbitron', monospace, Arial, sans-serif; display: flex; height: 100vh; overflow: hidden;}
+  .container { display: flex; width: 100%; }
+  .history, .bar-list {
+    flex: 1; background: rgba(20, 20, 40, 0.9); border-right: 2px solid #d6336c; padding: 15px; overflow-y: auto;
+  }
+  .history { max-width: 250px; }
+  .bar-list { max-width: 300px; }
+  .main {
+    flex: 2; padding: 30px 15px; display: flex; flex-direction: column; align-items: center; justify-content: start;
+    background: rgba(40, 0, 30, 0.95); border-left: 2px solid #d6336c; border-right: 2px solid #d6336c;
+  }
+  h1 {
+    color: #ff4081; text-shadow: 0 0 12px #ff156d; margin-bottom: 12px; text-align: center;
+  }
+  button {
+    background-color: #ff2381; border: none; border-radius: 8px; color: #fff;
+    font-size: 1.3rem; font-weight: 700; padding: 18px 38px; margin: 15px 0 25px 0;
+    cursor: pointer; text-transform: uppercase; box-shadow: 0 0 12px #ff2381;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  button:hover {
+    background-color: #ff4fab; transform: scale(1.1);
+  }
+  .result-box {
+    background: #2a082a; border-radius: 12px; padding: 25px 18px;
+    width: 100%; max-width: 420px; box-shadow: 0 0 15px #ff2381;
+    text-align: center; font-size: 1.2rem; line-height: 1.5; margin-bottom: 10px;
+  }
+  .result-box h2 { color: #ff6eb4; margin-bottom: 10px; }
+  a.map-link { color: #ff79a3; text-decoration: none; }
+  a.map-link:hover { text-decoration: underline; }
+  .history h3, .bar-list h3 {
+    color: #ff4d85; border-bottom: 2px solid #ff2381; padding-bottom: 6px; margin-bottom: 12px;
+  }
+  .history ul, .bar-list ul { list-style: none; padding-left: 0; font-size: 0.9rem; }
+  .history ul li { padding: 6px 4px; background: #381338; border-radius: 6px; margin-bottom: 8px; color: #ff8bbd;}
+  .bar-list ul li { padding: 6px 6px; border-bottom: 1px solid #4a174a; }
+  .bar-list ul li:hover { background: #550055; color: #fff; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="history">
+    <h3>歷史抽選紀錄 (最多8筆)</h3>
+    <ul id="historyList"><li>還沒有抽過酒吧哦～</li></ul>
+  </div>
+  <div class="main">
+    <h1>🍸 高雄酒吧樂透<br>(距離限制＋電話)</h1>
+    <button onclick="pickBar()">抽酒吧</button>
+    <div class="result-box" id="result">你的酒吧將顯示在這裡</div>
+  </div>
+  <div class="bar-list">
+    <h3>酒吧列表</h3>
+    <ul id="barList"></ul>
+  </div>
+</div>
+
+<script>
+const bars = [
+  ["上善若水-Goodness Bistro","高雄市苓雅區福建街221號","19:00 - 03:00","07-1234567",22.623647,120.312720],
+  ["眺吧餐酒館 The Lookout Bistro & Bar","高雄市新興區中山一路14-26號14樓","07:00 - 12:00、15:00 - 00:00","07-2345678",22.631156,120.302875],
+  ["La Face Bar","高雄市苓雅區成功一路230號","21:00 - 04:00","07-3456789",22.614262,120.297622],
+  ["馬沙里斯爵士酒館","高雄市新興區中正四路71號2樓","14:00 - 00:00","07-4567890",22.627463,120.301928],
+  ["双黃hhbar&cuisine 高雄酒吧","高雄市苓雅區中興街172號","11:30 - 19:15、20:00 - 03:00","07-5678901",22.620914,120.318013],
+  ["JustIn 入吧","高雄市鹽埕區三多四路40巷2號","14:00 - 02:00","07-6789012",22.626103,120.284072],
+  ["Bar Doorlight","高雄市苓雅區三多四路40巷2號","20:00 - 02:00","07-6789012",22.626103,120.284072],
+  ["PIER NO.1 高空酒吧","高雄市前鎮區英迪格酒店","19:00 - 00:00（週日~四）19:00 - 02:00（週五六）","07-7890123",22.613883,120.300179],
+  ["BL.T33 大廳酒吧","高雄市前鎮區洲際酒店1樓","10:00 - 24:00","07-8901234",22.580474,120.300699],
+  ["天空酒吧 Rooftop Bar 22","高雄市日航酒店","18:00 - 01:00","07-9012345",22.626925,120.284525],
+  ["浪際 WAVESTELLAR","高雄市鼓山區蓬萊路6之6號大港倉七庫","12:00 - 02:00","07-0123456",22.623790,120.284380],
+  ["BAR Diary","高雄市鼓山區富農路80號","21:00 - 05:00","07-1122334",22.671125,120.298429],
+  ["小島公寓/小島茶酒","高雄市新興區六合一路148號","20:00 - 02:00","07-2233445",22.635312,120.300187],
+  ["GIRAR bar & restaurant","高雄市苓雅區仁義街2-3號","傍晚至凌晨","07-3344556",22.619870,120.298901],
+  ["Bar Five Cocktail & Food","高雄市苓雅區仁義街2-4號","傍晚至凌晨","07-4455667",22.619905,120.298850],
+  ["窗吧 Thang-á-bar","高雄市前金區光明街2-2號","傍晚至凌晨","07-5566778",22.623250,120.298331],
+  ["Marsalis Bar 馬沙里斯爵士酒吧","高雄市鹽埕區大勇路","傍晚至凌晨","07-6677889",22.624968,120.285102],
+  ["三千 Atman Space","高雄市前金區文武三街194號","14:00 - 00:00","07-7788990",22.621113,120.294223],
+  ["Bravo Beer 布拉堡精釀啤酒餐廳","高雄市前鎮區中山二路","請與店家確認","07-8899001",22.613380,120.303980],
+  ["Yesterday Bar 昨日酒吧","高雄市新興區文橫一路25巷20號","21:00 - 02:00","07-9911223",22.626997,120.305609],
+  ["LIL GAZ","高雄市前金區五福三路50號B1","20:00 - 03:00","07-1012345",22.621857,120.295871],
+  ["GinMind","高雄市前金區仁義街273號","平日19:00-01:00 假日19:00-02:00","07-2023456",22.624841,120.294526],
+  ["Gallery 20.5","高雄市苓雅區中正二路56巷33弄20號1樓","20:00 - 02:00","07-3034567",22.624152,120.312210],
+  ["行者酒吧 The Walkers","807高雄市三民區旅順街8號","傍晚至凌晨","07-4045678",22.648534,120.311750],
+  ["Double Soul Bistro","813高雄市左營區文育路1號","傍晚至凌晨","07-5056789",22.687964,120.301479],
+  ["BAR DIP","802高雄市苓雅區苓雅一路404-16號","請與店家確認","07-6067890",22.619756,120.322437],
+  ["Roots","請與店家確認","請與店家確認","","",null,null],
+  ["Kongkoo 講古吧","高雄市前金區青年二路148號","晚上8點至凌晨3點","07-7078901",22.621913,120.298324],
+  ["Bar Tide 芭溙","高雄市鼓山區青海路106號","18:00 - 02:00","07-8089012",22.678710,120.280282],
+  ["Roma Roma Pizzeria & Bar","高雄市左營區辛亥路115號","18:00 - 02:00","07-9090123",22.686746,120.305763],
+  ["TACB 人文餐酒","高雄市新興區林森二路135巷35號","18:00 - 03:00","07-1011234",22.634246,120.301401],
+  ["Aqua Vitae Bistro","請與店家確認","請與店家確認","","",null,null],
+  ["Fine 30 Bistro","請與店家確認","請與店家確認","","",null,null],
+  ["崑崙客棧","請與店家確認","請與店家確認","","",null,null],
+  ["帕蒂森","請與店家確認","請與店家確認","","",null,null],
+  ["灣兜 The Wan-Daw","請與店家確認","請與店家確認","","",null,null],
+  ["Mamacita Tapas Bar 伊人西班牙小吃吧","請與店家確認","請與店家確認","","",null,null],
+  ["風Bar","請與店家確認","請與店家確認","","",null,null],
+  ["無聲的所在 Voice Over","請與店家確認","請與店家確認","","",null,null],
+  ["望樓 Barbican","高雄市新興區七賢一路122號","傍晚至凌晨","07-1112345",22.637079,120.300481],
+  ["冒險者酒吧","高雄市苓雅區中正二路81號B1","傍晚至凌晨","07-1213456",22.623551,120.313980],
+  ["酒所 Shalow Bar","請與店家確認","請與店家確認","","",null,null],
+  ["39 Bar","請與店家確認","請與店家確認","","",null,null],
+  ["Hiding Bar","請與店家確認","請與店家確認","","",null,null],
+  ["卡夫卡酒館 Kafka Bar","請與店家確認","請與店家確認","","",null,null],
+  ["Zoe's Bar","請與店家確認","請與店家確認","","",null,null],
+  ["The Mint Room","請與店家確認","請與店家確認","","",null,null]
+];
+
+const MAX_HISTORY = 8;
+let history = [];
+
+function createGoogleMapsLink(addr){
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
+}
+
+function updateBarList(){
+  const ul = document.getElementById('barList');
+  ul.innerHTML = '';
+  bars.forEach(b => {
+    const li = document.createElement('li');
+    li.textContent = b[0];
+    ul.appendChild(li);
+  });
+}
+
+function updateHistory(){
+  const ul = document.getElementById('historyList');
+  ul.innerHTML = '';
+  if(history.length === 0){
+    ul.innerHTML = '<li>還沒有抽過酒吧哦～</li>';
+    return;
+  }
+  history.forEach(item => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = createGoogleMapsLink(item[1]);
+    a.target = "_blank";
+    a.textContent = item[0];
+    a.className = "map-link";
+    li.appendChild(a);
+    li.append(` (${item[2]}) ☎️ ${item[3]}`);
+    ul.appendChild(li);
+  });
+}
+
+function getDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a =
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
+
+function pickBar(){
+  let chosen;
+  if(history.length === 0){
+    chosen = bars[Math.floor(Math.random() * bars.length)];
+  } else {
+    const last = history[history.length - 1];
+    if(last[4] != null && last[5] != null){
+      const nearby = bars.filter(b =>
+        b[4] != null && b[5] != null &&
+        getDistance(last[4], last[5], b[4], b[5]) <= 1 &&
+        (history.length < MAX_HISTORY || !history.some(h => h[0] === b[0]))
+      );
+      if(nearby.length) chosen = nearby[Math.floor(Math.random()*nearby.length)];
+      else {
+        const sorted = bars
+          .filter(b => b[4] != null && b[5] != null && (history.length < MAX_HISTORY || !history.some(h => h[0] === b[0])))
+          .map(b => [b, getDistance(last[4], last[5], b[4], b[5])])
+          .sort((a,b) => a[1]-b[1]);
+        chosen = sorted.length ? sorted[0][0] : bars[Math.floor(Math.random()*bars.length)];
+      }
+    } else {
+      chosen = bars[Math.floor(Math.random() * bars.length)];
+    }
+  }
+  history.push(chosen);
+  if(history.length > MAX_HISTORY) history.shift();
+  updateHistory();
+  document.getElementById('result').innerHTML = `
+    <h2>今晚去：${chosen[0]}</h2>
+    <p>📍 <a href="${createGoogleMapsLink(chosen[1])}" target="_blank" class="map-link">${chosen[1]}</a></p>
+    <p>⏰ 營業時間：${chosen[2]}</p>
+    <p>☎️ 電話：${chosen[3]}</p>
+  `;
+}
+
+updateBarList();
+updateHistory();
+</script>
+</body>
+</html>
