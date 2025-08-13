@@ -17,23 +17,13 @@
   .container { display: flex; flex-direction: column; flex: 1; }
   .main {
     padding: 12px 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: flex; flex-direction: column; align-items: center;
     background: rgba(40, 0, 30, 0.95);
-    border-top: 2px solid #d6336c;
-    border-bottom: 2px solid #d6336c;
+    border-top: 2px solid #d6336c; border-bottom: 2px solid #d6336c;
   }
-  h1 {
-    color: #ff4081;
-    text-shadow: 0 0 8px #ff156d;
-    margin: 4px 0 8px 0;
-    text-align: center;
-    font-size: 1.1rem;
-  }
+  h1 { color: #ff4081; text-shadow: 0 0 8px #ff156d; font-size: 1.1rem; margin: 4px 0 8px; text-align: center; }
   button {
-    background-color: #ff2381;
-    border: none; border-radius: 6px;
+    background-color: #ff2381; border: none; border-radius: 6px;
     color: #fff; font-size: 0.9rem; font-weight: 700;
     padding: 8px 16px; margin: 8px 0;
     cursor: pointer; box-shadow: 0 0 6px #ff2381;
@@ -42,32 +32,22 @@
   button:hover { background-color: #ff4fab; }
   .result-box {
     background: #2a082a; border-radius: 6px;
-    padding: 10px;
-    width: 100%; max-width: 360px;
+    padding: 10px; width: 100%; max-width: 360px;
     box-shadow: 0 0 8px #ff2381;
-    text-align: center; font-size: 0.9rem; line-height: 1.3;
+    text-align: center; font-size: 0.9rem;
   }
   .result-box h2 { font-size: 1rem; color: #ff6eb4; margin-bottom: 6px; }
   a.map-link { color: #ff79a3; text-decoration: none; }
   a.map-link:hover { text-decoration: underline; }
   .history, .bar-list {
     background: rgba(20, 20, 40, 0.9);
-    padding: 8px;
-    overflow-y: auto;
+    padding: 8px; overflow-y: auto;
     font-size: 0.85rem;
   }
-  h3 {
-    color: #ff4d85;
-    border-bottom: 1px solid #ff2381;
-    padding-bottom: 3px;
-    margin: 0 0 6px 0;
-    font-size: 0.9rem;
-  }
+  h3 { color: #ff4d85; border-bottom: 1px solid #ff2381; padding-bottom: 3px; margin: 0 0 6px 0; font-size: 0.9rem; }
   ul { list-style: none; padding-left: 0; margin: 0; }
   .history ul li, .bar-list ul li {
-    padding: 4px;
-    border-bottom: 1px solid #4a174a;
-    word-break: break-word;
+    padding: 4px; border-bottom: 1px solid #4a174a; word-break: break-word;
   }
   .history ul li { background: #381338; border-radius: 4px; margin-bottom: 4px; color: #ff8bbd; }
 </style>
@@ -76,7 +56,7 @@
 
 <div class="container">
   <div class="main">
-    <h1>🍸 高雄酒吧樂透 </h1>
+    <h1>🍸 高雄酒吧樂透</h1>
     <button onclick="pickBar()">抽酒吧</button>
     <div class="result-box" id="result">你的酒吧將顯示在這裡</div>
   </div>
@@ -179,15 +159,15 @@ function getDistance(lat1, lon1, lat2, lon2){
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a =
-    Math.sin(dLat/2)**2 +
-    Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
-    Math.sin(dLon/2)**2;
+  const a = Math.sin(dLat/2)**2 +
+            Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
+            Math.sin(dLon/2)**2;
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   return R * c;
 }
 function pickBar(){
   let chosen;
+  const allowRepeat = history.length >= MAX_HISTORY;
   if(history.length === 0){
     chosen = bars[Math.floor(Math.random()*bars.length)];
   } else {
@@ -196,18 +176,20 @@ function pickBar(){
       const nearby = bars.filter(b =>
         b[4] != null && b[5] != null &&
         getDistance(last[4], last[5], b[4], b[5]) <= 1 &&
-        (history.length < MAX_HISTORY || !history.some(h => h[0] === b[0]))
+        (allowRepeat || !history.some(h => h[0] === b[0]))
       );
-      if(nearby.length) chosen = nearby[Math.floor(Math.random()*nearby.length)];
-      else {
+      if(nearby.length){
+        chosen = nearby[Math.floor(Math.random() * nearby.length)];
+      } else {
         const sorted = bars
-          .filter(b => b[4] != null && b[5] != null && (history.length < MAX_HISTORY || !history.some(h => h[0] === b[0])))
+          .filter(b => b[4] != null && b[5] != null && (allowRepeat || !history.some(h => h[0] === b[0])))
           .map(b => [b, getDistance(last[4], last[5], b[4], b[5])])
           .sort((a,b) => a[1]-b[1]);
         chosen = sorted.length ? sorted[0][0] : bars[Math.floor(Math.random()*bars.length)];
       }
     } else {
-      chosen = bars[Math.floor(Math.random()*bars.length)];
+      const available = bars.filter(b => allowRepeat || !history.some(h => h[0] === b[0]));
+      chosen = available[Math.floor(Math.random() * available.length)];
     }
   }
   history.push(chosen);
@@ -225,4 +207,3 @@ updateHistory();
 </script>
 </body>
 </html>
-
