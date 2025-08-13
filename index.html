@@ -3,59 +3,133 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>高雄酒吧樂透（50家 距離限制＋電話）</title>
+<title>高雄酒吧樂透（50家 距離限制＋電話 手機版優化）</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
-  body { margin: 0; padding: 0; background: radial-gradient(ellipse at center, #0f0c29, #302b63, #24243e); color: #eee; font-family: 'Orbitron', monospace, Arial, sans-serif; display: flex; height: 100vh; overflow: hidden;}
-  .container { display: flex; width: 100%; }
+
+  body {
+    margin: 0; padding: 0;
+    background: radial-gradient(ellipse at center, #0f0c29, #302b63, #24243e);
+    color: #eee;
+    font-family: 'Orbitron', monospace, Arial, sans-serif;
+    display: flex; flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+  }
+
   .history, .bar-list {
-    flex: 1; background: rgba(20, 20, 40, 0.9); border-right: 2px solid #d6336c; padding: 15px; overflow-y: auto;
+    background: rgba(20, 20, 40, 0.9);
+    border-right: 2px solid #d6336c;
+    padding: 10px;
+    overflow-y: auto;
+    font-size: 0.9rem;
   }
-  .history { max-width: 250px; }
-  .bar-list { max-width: 300px; }
+
+  .history { flex: 1; max-width: 250px; }
+  .bar-list { flex: 1; max-width: 300px; }
+
   .main {
-    flex: 2; padding: 30px 15px; display: flex; flex-direction: column; align-items: center; justify-content: start;
-    background: rgba(40, 0, 30, 0.95); border-left: 2px solid #d6336c; border-right: 2px solid #d6336c;
+    flex: 2;
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(40, 0, 30, 0.95);
+    border-left: 2px solid #d6336c;
+    border-right: 2px solid #d6336c;
   }
+
   h1 {
-    color: #ff4081; text-shadow: 0 0 12px #ff156d; margin-bottom: 12px; text-align: center;
+    color: #ff4081;
+    text-shadow: 0 0 12px #ff156d;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 1.4rem;
   }
+
   button {
-    background-color: #ff2381; border: none; border-radius: 8px; color: #fff;
-    font-size: 1.3rem; font-weight: 700; padding: 18px 38px; margin: 15px 0 25px 0;
-    cursor: pointer; text-transform: uppercase; box-shadow: 0 0 12px #ff2381;
+    background-color: #ff2381;
+    border: none; border-radius: 8px;
+    color: #fff;
+    font-size: 1rem; font-weight: 700;
+    padding: 12px 24px;
+    margin: 10px 0 15px 0;
+    cursor: pointer;
+    box-shadow: 0 0 8px #ff2381;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
+    max-width: 280px;
   }
-  button:hover {
-    background-color: #ff4fab; transform: scale(1.1);
-  }
+
+  button:hover { background-color: #ff4fab; transform: scale(1.05); }
+
   .result-box {
-    background: #2a082a; border-radius: 12px; padding: 25px 18px;
-    width: 100%; max-width: 420px; box-shadow: 0 0 15px #ff2381;
-    text-align: center; font-size: 1.2rem; line-height: 1.5; margin-bottom: 10px;
+    background: #2a082a;
+    border-radius: 8px;
+    padding: 15px;
+    width: 95%;
+    max-width: 400px;
+    box-shadow: 0 0 10px #ff2381;
+    text-align: center;
+    font-size: 1rem;
+    line-height: 1.4;
   }
-  .result-box h2 { color: #ff6eb4; margin-bottom: 10px; }
+
+  .result-box h2 { color: #ff6eb4; margin-bottom: 8px; font-size: 1.2rem; }
   a.map-link { color: #ff79a3; text-decoration: none; }
   a.map-link:hover { text-decoration: underline; }
-  .history h3, .bar-list h3 {
-    color: #ff4d85; border-bottom: 2px solid #ff2381; padding-bottom: 6px; margin-bottom: 12px;
+
+  h3 {
+    color: #ff4d85;
+    border-bottom: 2px solid #ff2381;
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+    font-size: 1rem;
   }
-  .history ul, .bar-list ul { list-style: none; padding-left: 0; font-size: 0.9rem; }
-  .history ul li { padding: 6px 4px; background: #381338; border-radius: 6px; margin-bottom: 8px; color: #ff8bbd;}
-  .bar-list ul li { padding: 6px 6px; border-bottom: 1px solid #4a174a; }
-  .bar-list ul li:hover { background: #550055; color: #fff; }
+
+  ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+
+  .history ul li, .bar-list ul li {
+    padding: 6px;
+    border-bottom: 1px solid #4a174a;
+    word-break: break-word;
+  }
+
+  .history ul li { background: #381338; border-radius: 6px; margin-bottom: 6px; color: #ff8bbd; }
+
+  /* 響應式：手機(+窄螢幕)自動上下排列 */
+  @media (max-width: 768px) {
+    .container { flex-direction: column; }
+    .history, .bar-list {
+      max-width: unset;
+      border-right: none;
+      border-left: none;
+      border-top: 2px solid #d6336c;
+      border-bottom: 2px solid #d6336c;
+    }
+    .main { border: none; padding: 15px 5px; }
+  }
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="history">
-    <h3>歷史抽選紀錄 (最多8筆)</h3>
-    <ul id="historyList"><li>還沒有抽過酒吧哦～</li></ul>
-  </div>
+<div class="container" style="flex-direction: column;">
   <div class="main">
     <h1>🍸 高雄酒吧樂透<br>(距離限制＋電話)</h1>
     <button onclick="pickBar()">抽酒吧</button>
     <div class="result-box" id="result">你的酒吧將顯示在這裡</div>
+  </div>
+  <div class="history">
+    <h3>歷史抽選紀錄 (最多8筆)</h3>
+    <ul id="historyList"><li>還沒有抽過酒吧哦～</li></ul>
   </div>
   <div class="bar-list">
     <h3>酒吧列表</h3>
@@ -156,9 +230,9 @@ function getDistance(lat1, lon1, lat2, lon2) {
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a =
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
-    Math.sin(dLon/2) * Math.sin(dLon/2);
+    Math.sin(dLat/2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon/2) ** 2;
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   return R * c;
 }
