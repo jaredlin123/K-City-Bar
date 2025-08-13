@@ -1,55 +1,47 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
   body {
-    margin: 0; padding: 0;
-    background: radial-gradient(ellipse at center, #0f0c29, #302b63, #24243e);
-    color: #eee;
-    font-family: 'Orbitron', monospace, Arial, sans-serif;
-    display: flex; flex-direction: column;
-    min-height: 100vh;
-    font-size: 13px;
+    margin:0; padding:0;
+    background: radial-gradient(ellipse at center,#0f0c29,#302b63,#24243e);
+    color:#eee; font-family:'Orbitron', monospace, Arial, sans-serif;
+    display:flex; flex-direction:column; min-height:100vh;
+    font-size:13px;
   }
-  .container { display: flex; flex-direction: column; flex: 1; }
+  .container { display:flex; flex-direction:column; flex:1; }
   .main {
-    padding: 12px 8px;
-    display: flex; flex-direction: column; align-items: center;
-    background: rgba(40, 0, 30, 0.95);
-    border-top: 2px solid #d6336c; border-bottom: 2px solid #d6336c;
+    padding:12px 8px; display:flex; flex-direction:column; align-items:center;
+    background:rgba(40,0,30,0.95); border-top:2px solid #d6336c; border-bottom:2px solid #d6336c;
   }
-  h1 { color: #ff4081; text-shadow: 0 0 8px #ff156d; font-size: 1.1rem; margin: 4px 0 8px; text-align: center; }
+  h1 { color:#ff4081; text-shadow:0 0 8px #ff156d; font-size:1.1rem; margin:4px 0 8px; text-align:center; }
   button {
-    background-color: #ff2381; border: none; border-radius: 6px;
-    color: #fff; font-size: 0.9rem; font-weight: 700;
-    padding: 8px 16px; margin: 8px 0;
-    cursor: pointer; box-shadow: 0 0 6px #ff2381;
-    width: 100%; max-width: 220px;
+    background-color:#ff2381; border:none; border-radius:6px;
+    color:#fff; font-size:0.9rem; font-weight:700;
+    padding:8px 16px; margin:8px 0; cursor:pointer;
+    box-shadow:0 0 6px #ff2381; width:100%; max-width:220px;
   }
-  button:hover { background-color: #ff4fab; }
+  button:hover { background-color:#ff4fab; }
   .result-box {
-    background: #2a082a; border-radius: 6px;
-    padding: 10px; width: 100%; max-width: 360px;
-    box-shadow: 0 0 8px #ff2381;
-    text-align: center; font-size: 0.9rem;
+    background:#2a082a; border-radius:6px;
+    padding:10px; width:100%; max-width:360px;
+    box-shadow:0 0 8px #ff2381; text-align:center; font-size:0.9rem;
   }
-  .result-box h2 { font-size: 1rem; color: #ff6eb4; margin-bottom: 6px; }
-  a.map-link { color: #ff79a3; text-decoration: none; }
-  a.map-link:hover { text-decoration: underline; }
-  .history, .bar-list {
-    background: rgba(20, 20, 40, 0.9);
-    padding: 8px; overflow-y: auto;
-    font-size: 0.85rem;
+  .result-box h2 { font-size:1rem; color:#ff6eb4; margin-bottom:6px; }
+  a.map-link { color:#ff79a3; text-decoration:none; }
+  a.map-link:hover { text-decoration:underline; }
+  .history,.bar-list {
+    background:rgba(20,20,40,0.9); padding:8px; overflow-y:auto; font-size:0.85rem;
   }
-  h3 { color: #ff4d85; border-bottom: 1px solid #ff2381; padding-bottom: 3px; margin: 0 0 6px 0; font-size: 0.9rem; }
-  ul { list-style: none; padding-left: 0; margin: 0; }
-  .history ul li, .bar-list ul li {
-    padding: 4px; border-bottom: 1px solid #4a174a; word-break: break-word;
+  h3 { color:#ff4d85; border-bottom:1px solid #ff2381; padding-bottom:3px; margin:0 0 6px 0; font-size:0.9rem; }
+  ul { list-style:none; padding-left:0; margin:0; }
+  .history ul li,.bar-list ul li {
+    padding:4px; border-bottom:1px solid #4a174a; word-break:break-word;
   }
-  .history ul li { background: #381338; border-radius: 4px; margin-bottom: 4px; color: #ff8bbd; }
+  .history ul li { background:#381338; border-radius:4px; margin-bottom:4px; color:#ff8bbd; }
 </style>
 </head>
 <body>
@@ -174,22 +166,29 @@ function pickBar(){
     const last = history[history.length-1];
     if(last[4] != null && last[5] != null){
       const nearby = bars.filter(b =>
+        b[0] !== last[0] &&
         b[4] != null && b[5] != null &&
-        getDistance(last[4], last[5], b[4], b[5]) <= 1 &&
+        getDistance(last[4], last[5], b[4], b[5]) <= 3 &&
         (allowRepeat || !history.some(h => h[0] === b[0]))
       );
       if(nearby.length){
-        chosen = nearby[Math.floor(Math.random() * nearby.length)];
+        chosen = nearby[Math.floor(Math.random()*nearby.length)];
       } else {
         const sorted = bars
-          .filter(b => b[4] != null && b[5] != null && (allowRepeat || !history.some(h => h[0] === b[0])))
+          .filter(b =>
+            b[0] !== last[0] &&
+            b[4] != null && b[5] != null &&
+            (allowRepeat || !history.some(h => h[0] === b[0]))
+          )
           .map(b => [b, getDistance(last[4], last[5], b[4], b[5])])
           .sort((a,b) => a[1]-b[1]);
         chosen = sorted.length ? sorted[0][0] : bars[Math.floor(Math.random()*bars.length)];
       }
     } else {
-      const available = bars.filter(b => allowRepeat || !history.some(h => h[0] === b[0]));
-      chosen = available[Math.floor(Math.random() * available.length)];
+      const available = bars.filter(b =>
+        b[0] !== last[0] && (allowRepeat || !history.some(h => h[0] === b[0]))
+      );
+      chosen = available[Math.floor(Math.random()*available.length)];
     }
   }
   history.push(chosen);
@@ -202,6 +201,7 @@ function pickBar(){
     <p>☎️ ${chosen[3]}</p>
   `;
 }
+
 updateBarList();
 updateHistory();
 </script>
