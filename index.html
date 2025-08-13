@@ -3,10 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>高雄酒吧樂透（50家 距離限制＋電話 手機版優化）</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
-
   body {
     margin: 0; padding: 0;
     background: radial-gradient(ellipse at center, #0f0c29, #302b63, #24243e);
@@ -14,116 +12,71 @@
     font-family: 'Orbitron', monospace, Arial, sans-serif;
     display: flex; flex-direction: column;
     min-height: 100vh;
+    font-size: 13px;
   }
-
-  .container {
-    display: flex;
-    flex-direction: row;
-    flex: 1;
-  }
-
-  .history, .bar-list {
-    background: rgba(20, 20, 40, 0.9);
-    border-right: 2px solid #d6336c;
-    padding: 10px;
-    overflow-y: auto;
-    font-size: 0.9rem;
-  }
-
-  .history { flex: 1; max-width: 250px; }
-  .bar-list { flex: 1; max-width: 300px; }
-
+  .container { display: flex; flex-direction: column; flex: 1; }
   .main {
-    flex: 2;
-    padding: 20px 10px;
+    padding: 12px 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
     background: rgba(40, 0, 30, 0.95);
-    border-left: 2px solid #d6336c;
-    border-right: 2px solid #d6336c;
+    border-top: 2px solid #d6336c;
+    border-bottom: 2px solid #d6336c;
   }
-
   h1 {
     color: #ff4081;
-    text-shadow: 0 0 12px #ff156d;
-    margin-bottom: 10px;
+    text-shadow: 0 0 8px #ff156d;
+    margin: 4px 0 8px 0;
     text-align: center;
-    font-size: 1.4rem;
+    font-size: 1.1rem;
   }
-
   button {
     background-color: #ff2381;
-    border: none; border-radius: 8px;
-    color: #fff;
-    font-size: 1rem; font-weight: 700;
-    padding: 12px 24px;
-    margin: 10px 0 15px 0;
-    cursor: pointer;
-    box-shadow: 0 0 8px #ff2381;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    width: 100%;
-    max-width: 280px;
+    border: none; border-radius: 6px;
+    color: #fff; font-size: 0.9rem; font-weight: 700;
+    padding: 8px 16px; margin: 8px 0;
+    cursor: pointer; box-shadow: 0 0 6px #ff2381;
+    width: 100%; max-width: 220px;
   }
-
-  button:hover { background-color: #ff4fab; transform: scale(1.05); }
-
+  button:hover { background-color: #ff4fab; }
   .result-box {
-    background: #2a082a;
-    border-radius: 8px;
-    padding: 15px;
-    width: 95%;
-    max-width: 400px;
-    box-shadow: 0 0 10px #ff2381;
-    text-align: center;
-    font-size: 1rem;
-    line-height: 1.4;
+    background: #2a082a; border-radius: 6px;
+    padding: 10px;
+    width: 100%; max-width: 360px;
+    box-shadow: 0 0 8px #ff2381;
+    text-align: center; font-size: 0.9rem; line-height: 1.3;
   }
-
-  .result-box h2 { color: #ff6eb4; margin-bottom: 8px; font-size: 1.2rem; }
+  .result-box h2 { font-size: 1rem; color: #ff6eb4; margin-bottom: 6px; }
   a.map-link { color: #ff79a3; text-decoration: none; }
   a.map-link:hover { text-decoration: underline; }
-
+  .history, .bar-list {
+    background: rgba(20, 20, 40, 0.9);
+    padding: 8px;
+    overflow-y: auto;
+    font-size: 0.85rem;
+  }
   h3 {
     color: #ff4d85;
-    border-bottom: 2px solid #ff2381;
-    padding-bottom: 4px;
-    margin-bottom: 8px;
-    font-size: 1rem;
+    border-bottom: 1px solid #ff2381;
+    padding-bottom: 3px;
+    margin: 0 0 6px 0;
+    font-size: 0.9rem;
   }
-
-  ul {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-  }
-
+  ul { list-style: none; padding-left: 0; margin: 0; }
   .history ul li, .bar-list ul li {
-    padding: 6px;
+    padding: 4px;
     border-bottom: 1px solid #4a174a;
     word-break: break-word;
   }
-
-  .history ul li { background: #381338; border-radius: 6px; margin-bottom: 6px; color: #ff8bbd; }
-
-  /* 響應式：手機(+窄螢幕)自動上下排列 */
-  @media (max-width: 768px) {
-    .container { flex-direction: column; }
-    .history, .bar-list {
-      max-width: unset;
-      border-right: none;
-      border-left: none;
-      border-top: 2px solid #d6336c;
-      border-bottom: 2px solid #d6336c;
-    }
-    .main { border: none; padding: 15px 5px; }
-  }
+  .history ul li { background: #381338; border-radius: 4px; margin-bottom: 4px; color: #ff8bbd; }
 </style>
 </head>
 <body>
-<div class="container" style="flex-direction: column;">
+
+<div class="container">
   <div class="main">
-    <h1>🍸 高雄酒吧樂透<br>(距離限制＋電話)</h1>
+    <h1>🍸 高雄酒吧樂透 (距離限制＋電話)</h1>
     <button onclick="pickBar()">抽酒吧</button>
     <div class="result-box" id="result">你的酒吧將顯示在這裡</div>
   </div>
@@ -194,7 +147,6 @@ let history = [];
 function createGoogleMapsLink(addr){
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
 }
-
 function updateBarList(){
   const ul = document.getElementById('barList');
   ul.innerHTML = '';
@@ -204,7 +156,6 @@ function updateBarList(){
     ul.appendChild(li);
   });
 }
-
 function updateHistory(){
   const ul = document.getElementById('historyList');
   ul.innerHTML = '';
@@ -224,25 +175,23 @@ function updateHistory(){
     ul.appendChild(li);
   });
 }
-
-function getDistance(lat1, lon1, lat2, lon2) {
+function getDistance(lat1, lon1, lat2, lon2){
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a =
-    Math.sin(dLat/2) ** 2 +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-    Math.sin(dLon/2) ** 2;
+    Math.sin(dLat/2)**2 +
+    Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
+    Math.sin(dLon/2)**2;
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   return R * c;
 }
-
 function pickBar(){
   let chosen;
   if(history.length === 0){
-    chosen = bars[Math.floor(Math.random() * bars.length)];
+    chosen = bars[Math.floor(Math.random()*bars.length)];
   } else {
-    const last = history[history.length - 1];
+    const last = history[history.length-1];
     if(last[4] != null && last[5] != null){
       const nearby = bars.filter(b =>
         b[4] != null && b[5] != null &&
@@ -258,20 +207,19 @@ function pickBar(){
         chosen = sorted.length ? sorted[0][0] : bars[Math.floor(Math.random()*bars.length)];
       }
     } else {
-      chosen = bars[Math.floor(Math.random() * bars.length)];
+      chosen = bars[Math.floor(Math.random()*bars.length)];
     }
   }
   history.push(chosen);
   if(history.length > MAX_HISTORY) history.shift();
   updateHistory();
   document.getElementById('result').innerHTML = `
-    <h2>今晚去：${chosen[0]}</h2>
+    <h2>${chosen[0]}</h2>
     <p>📍 <a href="${createGoogleMapsLink(chosen[1])}" target="_blank" class="map-link">${chosen[1]}</a></p>
-    <p>⏰ 營業時間：${chosen[2]}</p>
-    <p>☎️ 電話：${chosen[3]}</p>
+    <p>⏰ ${chosen[2]}</p>
+    <p>☎️ ${chosen[3]}</p>
   `;
 }
-
 updateBarList();
 updateHistory();
 </script>
