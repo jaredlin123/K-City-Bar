@@ -160,37 +160,36 @@ function getDistance(lat1, lon1, lat2, lon2){
 function pickBar(){
   let chosen;
   const allowRepeat = history.length >= MAX_HISTORY;
+  const last = history[history.length-1] || null;
+
+  const isAllowed = (bar) => {
+    if(last && bar[0] === last[0]) return false;
+    if(!allowRepeat && history.some(h => h[0] === bar[0])) return false;
+    return true;
+  };
+
   if(history.length === 0){
     chosen = bars[Math.floor(Math.random()*bars.length)];
-  } else {
-    const last = history[history.length-1];
-    if(last[4] != null && last[5] != null){
-      const nearby = bars.filter(b =>
-        b[0] !== last[0] &&
-        b[4] != null && b[5] != null &&
-        getDistance(last[4], last[5], b[4], b[5]) <= 3 &&
-        (allowRepeat || !history.some(h => h[0] === b[0]))
-      );
-      if(nearby.length){
-        chosen = nearby[Math.floor(Math.random()*nearby.length)];
-      } else {
-        const sorted = bars
-          .filter(b =>
-            b[0] !== last[0] &&
-            b[4] != null && b[5] != null &&
-            (allowRepeat || !history.some(h => h[0] === b[0]))
-          )
-          .map(b => [b, getDistance(last[4], last[5], b[4], b[5])])
-          .sort((a,b) => a[1]-b[1]);
-        chosen = sorted.length ? sorted[0][0] : bars[Math.floor(Math.random()*bars.length)];
-      }
+  } else if(last && last[4] != null && last[5] != null){
+    let nearby = bars.filter(b =>
+      b[4] != null && b[5] != null &&
+      getDistance(last[4], last[5], b[4], b[5]) <= 3 &&
+      isAllowed(b)
+    );
+    if(nearby.length){
+      chosen = nearby[Math.floor(Math.random()*nearby.length)];
     } else {
-      const available = bars.filter(b =>
-        b[0] !== last[0] && (allowRepeat || !history.some(h => h[0] === b[0]))
-      );
-      chosen = available[Math.floor(Math.random()*available.length)];
+      const sorted = bars
+        .filter(isAllowed)
+        .map(b => [b, (b[4] != null && b[5] != null) ? getDistance(last[4], last[5], b[4], b[5]) : Infinity])
+        .sort((a,b) => a[1]-b[1]);
+      chosen = sorted.length ? sorted[0][0] : bars[Math.floor(Math.random()*bars.length)];
     }
+  } else {
+    const available = bars.filter(isAllowed);
+    chosen = available[Math.floor(Math.random() * available.length)];
   }
+
   history.push(chosen);
   if(history.length > MAX_HISTORY) history.shift();
   updateHistory();
